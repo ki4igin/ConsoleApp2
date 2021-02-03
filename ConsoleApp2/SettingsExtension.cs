@@ -14,14 +14,13 @@ namespace ConsoleApp2
     {
         public static void Display<T>(this T settings) where T : ISettings, IDescription
         {
-            MyConsole.WriteLineGreen($"Current Settings");
+            MyConsole.WriteNewLineGreen($"Current Settings");
             foreach (var setting in settings.GetType().GetProperties())
             {
                 var description = settings.GetPropertyDescription(setting.Name);
                 var value = setting.GetValue(settings);
                 MyConsole.WriteLine($"{description,-40} {value}");
             }
-            MyConsole.WriteLine();
         }
 
         public static void Save<T>(this T settings) where T : ISettings, IDescription
@@ -66,6 +65,7 @@ namespace ConsoleApp2
             if (fileNames.Count == 0)
             {
                 MyConsole.WriteNewLineRed("Файлы настроек не найдены!");
+                return;
             }
             var fileName = MyConsole.SelectFromList(fileNames.ToArray(), "Файлы");
             var filePath = $"{dirPath}/{fileName}.json";

@@ -39,5 +39,21 @@ namespace ConsoleApp2
             };
             return str;
         }
+        public static string GetFieldDescription<T>(this T value, string fieldName) where T : IDescription
+        {
+            var type = value.GetType();
+            var field = type.GetField(fieldName);
+            if (field is null)
+            {
+                throw new ArgumentException($"Property \"{fieldName}\" not found in {type}");
+            }
+            var atrib = field.GetCustomAttribute(typeof(DescriptionAttribute)) as DescriptionAttribute;
+            var str = atrib switch
+            {
+                null => value.ToString(),
+                _ => atrib.Description
+            };
+            return str;
+        }
     }
 }
