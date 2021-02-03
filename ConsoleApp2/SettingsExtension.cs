@@ -26,76 +26,34 @@ namespace ConsoleApp2
 
         public static void Save<T>(this T settings) where T : ISettings, IDescription
         {
-            var userSettings = new UserSettings();
-            foreach (var setting in settings.GetType().GetProperties())
-            {
-                var name = setting.Name;
-                var value = setting.GetValue(settings);
-                var userSetting = userSettings.GetType().GetProperty(name);
-                if (userSetting is null)
-                {
-                    throw new Exception($"In '{nameof(UserSettings)}' not found property '{name}'");
-                }
-                userSetting.SetValue(userSettings, value);
-            }
-            userSettings.Save();
+            var dirPath = AppContext.BaseDirectory + "/settings";
+            var fileName = ".settings";
+            var filePath = $"{dirPath}/{fileName}.json";
+            Directory.CreateDirectory(dirPath);
+            string jsonString = settings.SaveToStr();
+            File.WriteAllText(filePath, jsonString);
         }
-
         public static void Read<T>(this T settings) where T : ISettings, IDescription
         {
-            var userSettings = new UserSettings();
-            foreach (var setting in settings.GetType().GetProperties())
-            {
-                var name = setting.Name;
-                var userSetting = userSettings.GetType().GetProperty(name);
-                if (userSetting is null)
-                {
-                    throw new Exception($"In '{nameof(UserSettings)}' not found property '{name}'");
-                }
-                var value = userSetting.GetValue(userSettings);
-                setting.SetValue(settings, value);
-            }
+            var dirPath = AppContext.BaseDirectory + "/settings";
+            var fileName = ".settings";
+            var filePath = $"{dirPath}/{fileName}.json";
+            if (File.Exists(filePath) is false)
+                return;
+            var jsonString = File.ReadAllText(filePath);
+            settings.ReadFromStr(jsonString);
         }
-
-
-        public static string SaveToStr<T>(this T settings) where T : ISettings
-        {
-            var jsonOptions = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-            };
-            return JsonSerializer.Serialize(settings, jsonOptions);
-        }
-
-        public static void ReadFromStr<T>(this T settings, string str) where T : ISettings
-        {
-            var jsonOptions = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-            };
-            var newSettings = JsonSerializer.Deserialize<T>(str, jsonOptions);
-            CopyAllProperty(newSettings, settings);
-        }
-
         public static void SaveToFile<T>(this T settings) where T : ISettings
         {
             MyConsole.WriteNewLineGreen("Введите имя файла для сохранения настроек");
-            var fileName = MyConsole.ReadLine() + ".json";
+            var fileName = MyConsole.ReadLine();
             var dirPath = AppContext.BaseDirectory + "/settings";
-            var filePath = $"{dirPath}/{fileName}";
+            var filePath = $"{dirPath}/{fileName}.json";
             Directory.CreateDirectory(dirPath);
-            var jsonOptions = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-            };
-            string jsonString = JsonSerializer.Serialize(settings, jsonOptions);
+            string jsonString = settings.SaveToStr();
             File.WriteAllText(filePath, jsonString);
-            MyConsole.WriteNewLineGreen($"Настройки сохранены в файл {fileName}");
+            MyConsole.WriteNewLineGreen($"Настройки сохранены в файл {fileName}.json");
         }
-
         public static void ReadFromFile<T>(this T settings) where T : ISettings
         {
             var dirPath = AppContext.BaseDirectory + "/settings";
@@ -109,19 +67,32 @@ namespace ConsoleApp2
             {
                 MyConsole.WriteNewLineRed("Файлы настроек не найдены!");
             }
-
             var fileName = MyConsole.SelectFromList(fileNames.ToArray(), "Файлы");
             var filePath = $"{dirPath}/{fileName}.json";
+            var jsonString = File.ReadAllText(filePath);
+            settings.ReadFromStr(jsonString);
+       
+        }
+
+        private static string SaveToStr<T>(this T settings) where T : ISettings
+        {
             var jsonOptions = new JsonSerializerOptions
             {
                 WriteIndented = true,
                 Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             };
-            var jsonString = File.ReadAllText(filePath);
-            var newSettings = JsonSerializer.Deserialize<T>(jsonString, jsonOptions);
+            return JsonSerializer.Serialize(settings, jsonOptions);
+        }
+        private static void ReadFromStr<T>(this T settings, string str) where T : ISettings
+        {
+            var jsonOptions = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            };
+            var newSettings = JsonSerializer.Deserialize<T>(str, jsonOptions);
             CopyAllProperty(newSettings, settings);
         }
-
         private static void CopyAllProperty<T>(T source, T target)
         {
             var type = typeof(T);

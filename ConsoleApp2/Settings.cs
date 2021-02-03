@@ -16,6 +16,5 @@ namespace ConsoleApp2
         [Description("Значение частоты передатчика")] public string FreqTxValue { get; set; } = "375 МГц";
         [Description("Значение ослабления передатчика")] public string TxAttValue { get; set; } = "9 дБ";
         [Description("Режим работы")] public string OperatingModes { get; set; } = "сброс";
-
     }
 }

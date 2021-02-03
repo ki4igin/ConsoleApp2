@@ -24,13 +24,13 @@ namespace ConsoleApp2
             while (true)
             {
                 Settings settings = new();
-                //settings.Read();
+                settings.Read();
                 //settings.ReadFromFile();
                 settings.Display();
 
                 settings.BoardLocations = "55555";
 
-                //settings.Save();
+                settings.Save();
                 //settings.SaveToFile();
 
                 settings.Display();

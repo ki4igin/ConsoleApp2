@@ -23,7 +23,6 @@ namespace ConsoleApp2
             };
             return str;
         }
-
         public static string GetPropertyDescription<T>(this T value, string propertyName) where T : IDescription
         {
             var type = value.GetType();
