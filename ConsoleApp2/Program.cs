@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Reflection;
+using System.Threading;
 
 namespace ConsoleApp2
 {
@@ -20,23 +21,24 @@ namespace ConsoleApp2
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Settings settings = new();
             while (true)
             {
-                Settings settings = new();
+                MyConsole.WriteLine("Hello World!");
+                Thread.Sleep(1000);
                 settings.Read();
-                //settings.ReadFromFile();
+                settings.ReadFromFile();
                 settings.Display();
 
-                settings.BoardLocations = "55555";
+                //settings.BoardLocations = "55555";
 
-                settings.Save();
-                //settings.SaveToFile();
+                //settings.Save();
+                ////settings.SaveToFile();
 
-                settings.Display();
+                //settings.Display();
 
 
-                Console.ReadLine();
+                //Console.ReadLine();
             }
 
 
@@ -47,5 +49,5 @@ namespace ConsoleApp2
     {
         [Description("Name of Person")]
         public string Name { get; set; } = "Tom";
-    }     
+    }
 }

@@ -66,6 +66,7 @@ namespace ConsoleApp2
             if (fileNames.Count == 0)
             {
                 MyConsole.WriteNewLineRed("Файлы настроек не найдены!");
+                return;
             }
             var fileName = MyConsole.SelectFromList(fileNames.ToArray(), "Файлы");
             var filePath = $"{dirPath}/{fileName}.json";
